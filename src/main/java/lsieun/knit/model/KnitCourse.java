@@ -9,15 +9,15 @@ import java.util.Optional;
 public class KnitCourse
 {
     private final int courseIndex;
-    private KnitPassState goPass;
-    private KnitPassState backPass;
+    private KnitPass goPass;
+    private KnitPass backPass;
 
     public KnitCourse(int courseIndex) {
         this.courseIndex = courseIndex;
     }
 
     // 设置去程
-    public void setGoPass(KnitPassState goPass) {
+    public void setGoPass(KnitPass goPass) {
         if (goPass != null && goPass.passType() != PassType.GO) {
             throw new IllegalArgumentException("必须是 GO 类型的行程");
         }
@@ -25,11 +25,20 @@ public class KnitCourse
     }
 
     // 设置回程
-    public void setBackPass(KnitPassState backPass) {
+    public void setBackPass(KnitPass backPass) {
         if (backPass != null && backPass.passType() != PassType.BACK) {
             throw new IllegalArgumentException("必须是 BACK 类型的行程");
         }
         this.backPass = backPass;
+    }
+
+    public void addPass(KnitPass pass) {
+        if (pass == null) return;
+        if (pass.passType() == PassType.GO) {
+            this.goPass = pass;
+        } else if (pass.passType() == PassType.BACK) {
+            this.backPass = pass;
+        }
     }
 
     /**
@@ -43,11 +52,11 @@ public class KnitCourse
         return courseIndex;
     }
 
-    public Optional<KnitPassState> getGoPass() {
+    public Optional<KnitPass> getGoPass() {
         return Optional.ofNullable(goPass);
     }
 
-    public Optional<KnitPassState> getBackPass() {
+    public Optional<KnitPass> getBackPass() {
         return Optional.ofNullable(backPass);
     }
 

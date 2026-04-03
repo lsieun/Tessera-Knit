@@ -4,8 +4,8 @@ import lsieun.knit.context.InstructionBinding;
 import lsieun.knit.context.KnitContext;
 import lsieun.knit.instruction.*;
 import lsieun.knit.model.KnitFabric;
-import lsieun.knit.model.KnitPassState;
-import lsieun.knit.util.InstructionParser;
+import lsieun.knit.model.KnitPass;
+import lsieun.knit.util.KnitFabricHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -39,12 +39,12 @@ class KnitEngineTest
         // 4. 验证“秩序 (Order)”：检查 KnitContext
         System.out.println("\n=== 秩序检查 (KnitContext) ===");
         KnitContext context = engine.getContext();
-        List<KnitPassState> complexPasses = context.getPassesByInstruction(complex);
+        List<KnitPass> complexPasses = context.getPassesByInstruction(complex);
 
         System.out.println("复合指令生成的总行程数: " + complexPasses.size() + " (预期: 18)");
 
         // 抽取最后一行行程进行深度检查
-        KnitPassState lastPass = complexPasses.get(complexPasses.size() - 1);
+        KnitPass lastPass = complexPasses.get(complexPasses.size() - 1);
         InstructionBinding binding = context.getBinding(lastPass).orElseThrow();
 
         System.out.println("最后一趟行程详情:");
@@ -54,7 +54,7 @@ class KnitEngineTest
         System.out.println("  - 引擎最终逻辑针数: " + engine.getLastState().stitchCount() + " (预期: 103)");
     }
 
-    private static void printState(String label, KnitPassState state)
+    private static void printState(String label, KnitPass state)
     {
         System.out.printf("[%s] -> 转数: %d, 方向: %s, 针数: %d%n",
                 label, state.courseIndex(), state.passType(), state.stitchCount());
@@ -76,7 +76,7 @@ class KnitEngineTest
         engine.processAll(techSheet);
 
         // 获取并打印结果
-        KnitFabric fabric = engine.getFabric("批量测试织物");
+        KnitFabric fabric = KnitFabricHelper.getFabric(engine, "批量测试织物");
         fabric.printDetailedReport();
     }
 
@@ -128,44 +128,25 @@ class KnitEngineTest
         engine.processAll(techSheet);
 
         // 4. 输出结果
-        KnitFabric fabric = engine.getFabric("高级袖片-Pass统一版");
+        KnitFabric fabric = KnitFabricHelper.getFabric(engine, "高级袖片-Pass统一版");
         System.out.println("\n" + fabric.toString());
         System.out.println("最终针数验证: " + engine.getLastState().stitchCount() + " (预期: 12)");
 
         // 打印简要报告
         System.out.println("\n关键节点核对：");
-        System.out.println("总行程数 (Passes): " + fabric.getCourses().stream()
+        System.out.println("总行程数 (Passes): " + fabric.courses().stream()
                 .mapToInt(c -> (c.getGoPass().isPresent() ? 1 : 0) + (c.getBackPass().isPresent() ? 1 : 0))
                 .sum());
     }
 
     @Test
-    void test004 () {
-        // 6转、6+1+30、7+1+10、19转、20针（平收）、1转、1-2-2、1.5-2-8、2-2-24、1.5-2-6、1-2-4
-        String[] instructionArray = {
-                "1-2-4",
-                "1.5-2-6",
-                "2-2-24",
-                "1.5-2-8",
-                "1-2-2",
-                "1转",
-                "-20针",
-                "19转",
-                "7+1+10",
-                "6+1+30",
-                "6转"
-        };
+    void test004()
+    {
 
-
-        InstructionParser parser = new InstructionParser();
-        List<KnitInstruction> techSheet = parser.parse(instructionArray);
-
-        KnitEngine engine = new KnitEngine(267);
-        engine.processAll(techSheet);
 
 //        KnittingFabric fabric = engine.getFabric("从下往上的袖片");
 //        fabric.printDetailedReport();
 
-        engine.printInvertedReport("Hello");
+//        engine.printInvertedReport("Hello");
     }
 }

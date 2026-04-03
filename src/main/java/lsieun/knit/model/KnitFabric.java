@@ -7,15 +7,11 @@ import java.util.List;
 /**
  * 代表整个织物（Fabric），由多转（Course）纵向堆叠而成
  */
-public class KnitFabric
+public record KnitFabric(String name, List<KnitCourse> courses)
 {
-    private final String name;
-    private final List<KnitCourse> courses;
-
     public KnitFabric(String name)
     {
-        this.name = name;
-        this.courses = new ArrayList<>();
+        this(name, new ArrayList<>());
     }
 
     /**
@@ -26,15 +22,11 @@ public class KnitFabric
         this.courses.add(course);
     }
 
-    public String getName()
-    {
-        return name;
-    }
-
     /**
      * 获取所有转（不可变列表，保证封装性）
      */
-    public List<KnitCourse> getCourses()
+    @Override
+    public List<KnitCourse> courses()
     {
         return Collections.unmodifiableList(courses);
     }
