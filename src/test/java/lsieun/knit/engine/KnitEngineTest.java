@@ -3,21 +3,21 @@ package lsieun.knit.engine;
 import lsieun.knit.context.InstructionBinding;
 import lsieun.knit.context.KnitContext;
 import lsieun.knit.instruction.*;
-import lsieun.knit.model.KnittingFabric;
-import lsieun.knit.model.KnittingPassState;
+import lsieun.knit.model.KnitFabric;
+import lsieun.knit.model.KnitPassState;
 import lsieun.knit.util.InstructionParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class KnittingEngineTest
+class KnitEngineTest
 {
     @Test
     void test001()
     {
         // 1. 初始化引擎：起始针数 100
-        KnittingEngine engine = new KnittingEngine(100);
+        KnitEngine engine = new KnitEngine(100);
         System.out.println("=== 引擎启动 ===");
         printState("初始状态", engine.getLastState());
 
@@ -39,12 +39,12 @@ class KnittingEngineTest
         // 4. 验证“秩序 (Order)”：检查 KnitContext
         System.out.println("\n=== 秩序检查 (KnitContext) ===");
         KnitContext context = engine.getContext();
-        List<KnittingPassState> complexPasses = context.getPassesByInstruction(complex);
+        List<KnitPassState> complexPasses = context.getPassesByInstruction(complex);
 
         System.out.println("复合指令生成的总行程数: " + complexPasses.size() + " (预期: 18)");
 
         // 抽取最后一行行程进行深度检查
-        KnittingPassState lastPass = complexPasses.get(complexPasses.size() - 1);
+        KnitPassState lastPass = complexPasses.get(complexPasses.size() - 1);
         InstructionBinding binding = context.getBinding(lastPass).orElseThrow();
 
         System.out.println("最后一趟行程详情:");
@@ -54,7 +54,7 @@ class KnittingEngineTest
         System.out.println("  - 引擎最终逻辑针数: " + engine.getLastState().stitchCount() + " (预期: 103)");
     }
 
-    private static void printState(String label, KnittingPassState state)
+    private static void printState(String label, KnitPassState state)
     {
         System.out.printf("[%s] -> 转数: %d, 方向: %s, 针数: %d%n",
                 label, state.courseIndex(), state.passType(), state.stitchCount());
@@ -63,7 +63,7 @@ class KnittingEngineTest
     @Test
     void testBatchProcess()
     {
-        KnittingEngine engine = new KnittingEngine(80);
+        KnitEngine engine = new KnitEngine(80);
 
         // 准备一份简单的工艺单
         List<KnitInstruction> techSheet = List.of(
@@ -76,7 +76,7 @@ class KnittingEngineTest
         engine.processAll(techSheet);
 
         // 获取并打印结果
-        KnittingFabric fabric = engine.getFabric("批量测试织物");
+        KnitFabric fabric = engine.getFabric("批量测试织物");
         fabric.printDetailedReport();
     }
 
@@ -84,7 +84,7 @@ class KnittingEngineTest
     void test003()
     {
         // 1. 初始化引擎：假设初始起针数为 80 针
-        KnittingEngine engine = new KnittingEngine(267);
+        KnitEngine engine = new KnitEngine(267);
 
         // 2. 将你的工艺描述转换为指令列表
         List<KnitInstruction> techSheet = new ArrayList<>();
@@ -128,7 +128,7 @@ class KnittingEngineTest
         engine.processAll(techSheet);
 
         // 4. 输出结果
-        KnittingFabric fabric = engine.getFabric("高级袖片-Pass统一版");
+        KnitFabric fabric = engine.getFabric("高级袖片-Pass统一版");
         System.out.println("\n" + fabric.toString());
         System.out.println("最终针数验证: " + engine.getLastState().stitchCount() + " (预期: 12)");
 
@@ -160,7 +160,7 @@ class KnittingEngineTest
         InstructionParser parser = new InstructionParser();
         List<KnitInstruction> techSheet = parser.parse(instructionArray);
 
-        KnittingEngine engine = new KnittingEngine(267);
+        KnitEngine engine = new KnitEngine(267);
         engine.processAll(techSheet);
 
 //        KnittingFabric fabric = engine.getFabric("从下往上的袖片");

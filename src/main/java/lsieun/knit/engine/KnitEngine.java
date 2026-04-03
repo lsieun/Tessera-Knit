@@ -3,37 +3,38 @@ package lsieun.knit.engine;
 import lsieun.knit.context.InstructionBinding;
 import lsieun.knit.context.KnitContext;
 import lsieun.knit.instruction.*;
-import lsieun.knit.model.KnittingCourse;
-import lsieun.knit.model.KnittingFabric;
-import lsieun.knit.model.KnittingPassState;
+import lsieun.knit.model.KnitCourse;
+import lsieun.knit.model.KnitFabric;
+import lsieun.knit.model.KnitPassState;
 import lsieun.knit.model.PassType;
 
 import java.util.*;
 
-public class KnittingEngine {
-    private KnittingPassState lastState; // 引擎当前的物理与逻辑状态
+public class KnitEngine
+{
+    private KnitPassState lastState; // 引擎当前的物理与逻辑状态
     private final KnitContext context;   // 秩序容器：记录 Pass 与 Instruction 的关系
 
     // 这里定义 history，用于存储引擎运行至今产生的所有物理行程
-    private final List<KnittingPassState> history = new ArrayList<>();
+    private final List<KnitPassState> history = new ArrayList<>();
 
-    public KnittingEngine(int startStitchCount) {
+    public KnitEngine(int startStitchCount) {
         // 使用初始状态工厂：Course 0, 机头在左(BACK), 指定针数
-        this.lastState = KnittingPassState.initial(startStitchCount);
+        this.lastState = KnitPassState.initial(startStitchCount);
         this.context = new KnitContext();
     }
 
-    public KnittingFabric getFabric(String fabricName) {
-        KnittingFabric fabric = new KnittingFabric(fabricName);
+    public KnitFabric getFabric(String fabricName) {
+        KnitFabric fabric = new KnitFabric(fabricName);
 
         // 使用 TreeMap 确保转数按 1, 2, 3... 的顺序排列
-        Map<Integer, KnittingCourse> courseMap = new TreeMap<>();
+        Map<Integer, KnitCourse> courseMap = new TreeMap<>();
 
-        for (KnittingPassState pass : history) {
+        for (KnitPassState pass : history) {
             // 如果这一转还没创建，先创建它
-            KnittingCourse course = courseMap.computeIfAbsent(
+            KnitCourse course = courseMap.computeIfAbsent(
                     pass.courseIndex(),
-                    KnittingCourse::new
+                    KnitCourse::new
             );
 
             // 根据类型放入对应的槽位
@@ -45,7 +46,7 @@ public class KnittingEngine {
         }
 
         // 将组装好的 Course 依次放入 Fabric 实体
-        for (KnittingCourse course : courseMap.values()) {
+        for (KnitCourse course : courseMap.values()) {
             fabric.addCourse(course);
         }
 
@@ -58,12 +59,12 @@ public class KnittingEngine {
                 "Instruction", "Course", "Direction", "Before", "Pass", "After", "Action", "Repeat");
         System.out.println("--------------------------------------------------------------------------------------------------------------------------------");
 
-        KnittingFabric fabric = getFabric(fabricName);
+        KnitFabric fabric = getFabric(fabricName);
 
         // 1. 获取所有 Course 并倒序遍历 (让最后一转在最上面)
-        List<KnittingCourse> allCourses = fabric.getCourses();
+        List<KnitCourse> allCourses = fabric.getCourses();
         for (int i = allCourses.size() - 1; i >= 0; i--) {
-            KnittingCourse course = allCourses.get(i);
+            KnitCourse course = allCourses.get(i);
 
             // 每一转包含两个 Pass：先打印 BACK (回程)，再打印 GO (去程)
             // 这样在视觉上：GO 在下，BACK 在上，符合一个 Course 的堆叠感
@@ -75,9 +76,9 @@ public class KnittingEngine {
         System.out.println("================================================================================================================================");
     }
 
-    private void printPassRow(Optional<KnittingPassState> passOpt, int courseIdx) {
+    private void printPassRow(Optional<KnitPassState> passOpt, int courseIdx) {
         if (passOpt.isEmpty()) return;
-        KnittingPassState pass = passOpt.get();
+        KnitPassState pass = passOpt.get();
 
         // 从 Context 获取指令绑定信息
         var binding = context.getBinding(pass).orElse(null);
@@ -195,7 +196,7 @@ public class KnittingEngine {
         PassType nextType = lastState.passType().next();
         int nextCourse = (nextType == PassType.GO) ? lastState.courseIndex() + 1 : lastState.courseIndex();
 
-        KnittingPassState currentState = lastState.mutate()
+        KnitPassState currentState = lastState.mutate()
                 .courseIndex(nextCourse)
                 .passType(nextType)
                 .stitchCount(lastState.stitchCount())
@@ -221,6 +222,6 @@ public class KnittingEngine {
     }
 
     // --- Getters ---
-    public KnittingPassState getLastState() { return lastState; }
+    public KnitPassState getLastState() { return lastState; }
     public KnitContext getContext() { return context; }
 }

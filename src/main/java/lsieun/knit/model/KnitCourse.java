@@ -6,17 +6,18 @@ import java.util.Optional;
  * 代表编织中的“一转”（Course）。
  * 支持半转状态（只有 goPass），并处理去程与回程针数不一致的情况。
  */
-public class KnittingCourse {
+public class KnitCourse
+{
     private final int courseIndex;
-    private KnittingPassState goPass;
-    private KnittingPassState backPass;
+    private KnitPassState goPass;
+    private KnitPassState backPass;
 
-    public KnittingCourse(int courseIndex) {
+    public KnitCourse(int courseIndex) {
         this.courseIndex = courseIndex;
     }
 
     // 设置去程
-    public void setGoPass(KnittingPassState goPass) {
+    public void setGoPass(KnitPassState goPass) {
         if (goPass != null && goPass.passType() != PassType.GO) {
             throw new IllegalArgumentException("必须是 GO 类型的行程");
         }
@@ -24,7 +25,7 @@ public class KnittingCourse {
     }
 
     // 设置回程
-    public void setBackPass(KnittingPassState backPass) {
+    public void setBackPass(KnitPassState backPass) {
         if (backPass != null && backPass.passType() != PassType.BACK) {
             throw new IllegalArgumentException("必须是 BACK 类型的行程");
         }
@@ -42,11 +43,11 @@ public class KnittingCourse {
         return courseIndex;
     }
 
-    public Optional<KnittingPassState> getGoPass() {
+    public Optional<KnitPassState> getGoPass() {
         return Optional.ofNullable(goPass);
     }
 
-    public Optional<KnittingPassState> getBackPass() {
+    public Optional<KnitPassState> getBackPass() {
         return Optional.ofNullable(backPass);
     }
 

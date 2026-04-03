@@ -3,7 +3,7 @@ package lsieun.knit.model;
 /**
  * 代表编织机器在某一个单程（Pass）中的完整状态
  */
-public record KnittingPassState(
+public record KnitPassState(
         int courseIndex,
         PassType passType,
         int stitchCount,
@@ -32,7 +32,7 @@ public record KnittingPassState(
         }
 
         // 内部构造，从现有状态克隆
-        private Builder(KnittingPassState state)
+        private Builder(KnitPassState state)
         {
             this.courseIndex = state.courseIndex();
             this.passType = state.passType();
@@ -71,9 +71,9 @@ public record KnittingPassState(
             return this;
         }
 
-        public KnittingPassState build()
+        public KnitPassState build()
         {
-            return new KnittingPassState(courseIndex, passType, stitchCount, direction);
+            return new KnitPassState(courseIndex, passType, stitchCount, direction);
         }
     }
 
@@ -83,9 +83,9 @@ public record KnittingPassState(
      *
      * @return 一个位于 Course 0, BACK 结束（机头在左）, 指定针数的初始状态
      */
-    public static KnittingPassState initial(int stitchCount)
+    public static KnitPassState initial(int stitchCount)
     {
-        return new KnittingPassState.Builder()
+        return new KnitPassState.Builder()
                 .courseIndex(0)
                 .passType(PassType.BACK) // 默认为 BACK 结束，确保第一个指令的 next() 是 GO
                 .stitchCount(stitchCount)
@@ -95,9 +95,9 @@ public record KnittingPassState(
     /**
      * 如果你需要更灵活的初始位置（比如机头起始在右侧）
      */
-    public static KnittingPassState initial(int courseIndex, PassType passType, int stitchCount)
+    public static KnitPassState initial(int courseIndex, PassType passType, int stitchCount)
     {
-        return new KnittingPassState.Builder()
+        return new KnitPassState.Builder()
                 .courseIndex(courseIndex)
                 .passType(passType)
                 .stitchCount(stitchCount)

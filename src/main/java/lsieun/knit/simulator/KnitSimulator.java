@@ -3,7 +3,8 @@ package lsieun.knit.simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KnittingSimulator {
+public class KnitSimulator
+{
 
     // 定义策略：先动作再编织（如 6+1+30）或先编织再动作（如 7+1+10）
     enum Strategy {
@@ -12,14 +13,15 @@ public class KnittingSimulator {
     }
 
     // 工艺阶段数据模型
-    static class KnittingCommand {
+    static class KnitCommand
+    {
         String name;          // 阶段名称
         int interval;         // 间隔转数 (round)
         int needleAdjust;     // 单边加减针数 (needles)
         int repeats;          // 执行次数 (n)
         Strategy strategy;    // 计算策略
 
-        public KnittingCommand(String name, int interval, int needleAdjust, int repeats, Strategy strategy) {
+        public KnitCommand(String name, int interval, int needleAdjust, int repeats, Strategy strategy) {
             this.name = name;
             this.interval = interval;
             this.needleAdjust = needleAdjust;
@@ -58,13 +60,13 @@ public class KnittingSimulator {
         rows.add(start);
 
         // 2. 指令集定义
-        List<KnittingCommand> commands = new ArrayList<>();
-        commands.add(new KnittingCommand("袖身放针 A", 6, 1, 30, Strategy.ACTION_THEN_KNIT));
-        commands.add(new KnittingCommand("袖身放针 B", 7, 1, 10, Strategy.ACTION_THEN_KNIT)); // 此处可根据实际灵活调整策略
+        List<KnitCommand> commands = new ArrayList<>();
+        commands.add(new KnitCommand("袖身放针 A", 6, 1, 30, Strategy.ACTION_THEN_KNIT));
+        commands.add(new KnitCommand("袖身放针 B", 7, 1, 10, Strategy.ACTION_THEN_KNIT)); // 此处可根据实际灵活调整策略
         // 注意：根据你的推论 6+(6*29)+(7*10)=250，这里 B 段应为 KNIT_THEN_ACTION
 
         // 模拟执行逻辑
-        for (KnittingCommand cmd : commands) {
+        for (KnitCommand cmd : commands) {
             for (int i = 1; i <= cmd.repeats; i++) {
                 TableRow row = new TableRow();
                 row.stage = cmd.name;

@@ -3,7 +3,8 @@ package lsieun.knit.simulator;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KnittingTechnician {
+public class KnitTechnician
+{
 
     // 模拟器状态追踪
     static class MachineState {
