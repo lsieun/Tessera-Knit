@@ -45,4 +45,23 @@ public class KnittingFabric {
     public String toString() {
         return String.format("织物项目: %s, 总高度: %d 转", name, courses.size());
     }
+
+    public void printDetailedReport() {
+        System.out.println("织物报告: " + name);
+        System.out.println("----------------------------------------------------------------");
+        System.out.printf("%-10s | %-12s | %-12s | %-10s%n", "COURSE", "GO_STITCHES", "BACK_STITCHES", "STATUS");
+        System.out.println("----------------------------------------------------------------");
+
+        for (KnittingCourse c : courses) {
+            String goStr = c.getGoPass().map(p -> String.valueOf(p.stitchCount())).orElse("-");
+            String backStr = c.getBackPass().map(p -> String.valueOf(p.stitchCount())).orElse("-");
+            String status = c.isCompleted() ? "DONE" : "INCOMPLETE";
+
+            System.out.printf("C-%-8d | %-12s | %-12s | %-10s%n",
+                    c.getCourseIndex(), goStr, backStr, status);
+        }
+        System.out.println("----------------------------------------------------------------");
+    }
+
+
 }
